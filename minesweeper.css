@@ -4,6 +4,14 @@
   --h-size: 225;
 }
 
+canvas {
+  -webkit-user-select: none;  /* iOS Safari */
+  -webkit-touch-callout: none; /* iOS Safari (長押しメニュー禁止) */
+  user-select: none;           /* 標準 */
+  outline: none;               /* フォーカス時の枠線を消す */
+  -webkit-tap-highlight-color: rgba(0,0,0,0); /* タップ時の青い網掛けを消す */
+}
+
 #myCanvas{
   border: 2px solid rgb(65, 64, 64);
   background: lightgray; 

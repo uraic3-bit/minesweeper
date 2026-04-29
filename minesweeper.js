@@ -220,42 +220,13 @@ document.querySelector("#level-hard").addEventListener("click",(ev)=>setLevel(GA
 canvas.addEventListener("click",e => {
     checkPanel(e);
     checkComplete();
-})
+});
 
 //イベントリスナー追加（マウス右クリック時）
 canvas.addEventListener("contextmenu",e => {
     // ブラウザのメニューが出るのを阻止
     e.preventDefault();
     checkPanel2(e);
-})
-
-//スマホ用
-    let longPressTimer;
-
-    canvas.addEventListener('touchstart', (e) => {
-    // 1本指の場合のみ処理
-    if (e.touches.length > 1) return;
-    const touch = e.touches[0];
-    // タイマー開始
-    longPressTimer = setTimeout(() => {
-        // ここで直接 checkPanel2 を呼ぶ
-        // e（元のイベント）はここでも有効なので preventDefault が呼べます
-        if (e.cancelable) e.preventDefault(); 
-        
-        // 座標情報を渡す
-        checkPanel2(touch); 
-        
-        // 動作確認用
-        console.log("長押し成功");
-    }, 500);
-}, { passive: false }); // preventDefaultを呼ぶために passive: false が必須
-
-canvas.addEventListener('touchend', () => {
-    clearTimeout(longPressTimer);
-});
-
-canvas.addEventListener('touchmove', () => {
-    clearTimeout(longPressTimer);
 });
 
 //イベントリスナー追加（リセットボタン押下時）
@@ -270,6 +241,25 @@ setInterval(() => {
     if(wTime > 999) {wTime = 0;}
     outputTimer.textContent = String(wTime).padStart(3,0);
 },1000);
+
+//スマホ用
+canvas.addEventListener('touchstart', (e) => {
+    // 指が2本触れたら「右クリック」とみなす
+    if (e.touches.length === 2) {
+        e.preventDefault(); // ズーム防止
+        
+        // 1本目の指の座標を使って判定
+        const touch = e.touches[0];
+        
+        // offsetXの代わりに簡易的に座標を模造して渡す
+        const rect = canvas.getBoundingClientRect();
+        const fakeEvent = {
+            offsetX: touch.clientX - rect.left,
+            offsetY: touch.clientY - rect.top
+        };
+        
+        checkPanel2(fakeEvent); 
+    }
 
 /**
  * セルの状態を確認し、セルを更新する（セルOPEN用）

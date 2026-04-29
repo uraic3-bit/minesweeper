@@ -1,0 +1,90 @@
+:root {
+  /* デフォルト値を設定 */
+  --w-size: 225;
+  --h-size: 225;
+}
+
+#myCanvas{
+  border: 2px solid rgb(65, 64, 64);
+  background: lightgray; 
+  width: var(--w-size);
+  height: var(--h-size);
+}
+
+.header{
+  border: 2px solid black;
+  background-color: lightgray;
+  width: var(--w-size);
+  height: 30px;
+  justify-content: space-between; /* 両端に寄せる */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.bomb-count, .timer {
+  border: 1px solid white;
+  flex: 0 0 80px;
+  text-align: center;
+  color:red;
+  font:bold;
+  background-color: black;
+  height: 25px;
+}
+
+#reset{
+  border: 1px solid white;
+  text-align: center;
+  background-color: lightgray; 
+  height: 25px;
+}
+
+.navbar {
+  width: var(--w-size);
+  border: 2px solid black;
+  background-color: lightgray;
+}
+
+.nav-list{
+  display: flex;
+  justify-content: space-between; /* 両端に寄せる */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-list li {
+  position: relative; /* 子メニューの配置の基準にする */
+}
+
+.nav-list a{
+  display: block;
+  text-align: center;
+  width: 60px;
+}
+
+.dropdown-menu {
+  display: none; 
+  position: absolute; /* 親要素の真下に浮かせる */
+  top: 100%;          /* 親の高さ100%の位置から開始 */
+  left: 0;
+  background-color: lightgray;
+  list-style: none;
+  min-width: 100px;   /* メニューの横幅 */
+  padding: 0;
+}
+
+/* 2. 親のliにホバーしたら子メニューを表示 */
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+/* 子メニュー内のリンク設定 */
+.dropdown-menu li a {
+  padding: 10px 20px;
+  font-size: 14px;
+}
+
+.dropdown-menu li a:hover {
+  background-color: #555;
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>マインスイーパー</title>
+    <link rel="stylesheet" href="./minesweeper.css" />
+    <script type="module" src="./minesweeper.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="nav-list">
+            <li class="dropdown">
+                <a>ゲーム</a>
+                    <ul class="dropdown-menu">
+                        <li><a id="level-easy" href="#">初級</a></li>
+                        <li><a id="level-normal" href="#">中級</a></li>
+                        <li><a id="level-hard" href="#">上級</a></li>
+                    </ul>
+            </li>
+            <li><a>設定</a></li>
+            <li><a>ヘルプ</a></li>
+        </ul>
+    </nav>
+    <div class="header">
+        <div class="bomb-count">
+            <span>💣</span>
+            <output id="mines">010</output>
+        </div>
+        <button id="reset">😎</button>
+        <div class="timer">
+            <span>⏱</span>
+            <output id="secounds">000</output>
+        </div>
+    </div>
+    <canvas id="myCanvas"></canvas>
+</body>
+</html>

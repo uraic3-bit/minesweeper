@@ -231,29 +231,32 @@ canvas.addEventListener("contextmenu",e => {
 
 //スマホ用
     let longPressTimer;
+
     canvas.addEventListener('touchstart', (e) => {
-        // 最初の1本目の指だけを対象にする
-        const touch = e.touches[0];
-    // 指が触れたらタイマー開始
+    // 1本指の場合のみ処理
+    if (e.touches.length > 1) return;
+    const touch = e.touches[0];
+    // タイマー開始
     longPressTimer = setTimeout(() => {
-        executeRightClickAction(touch); // 右クリック相当の処理を実行
+        // ここで直接 checkPanel2 を呼ぶ
+        // e（元のイベント）はここでも有効なので preventDefault が呼べます
+        if (e.cancelable) e.preventDefault(); 
+        
+        // 座標情報を渡す
+        checkPanel2(touch); 
+        
+        // 動作確認用
+        console.log("長押し成功");
     }, 500);
-    });
+}, { passive: false }); // preventDefaultを呼ぶために passive: false が必須
 
-    canvas.addEventListener('touchend', () => {
-    // 時間内に指が離れたらキャンセル（＝通常のタップ）
+canvas.addEventListener('touchend', () => {
     clearTimeout(longPressTimer);
-    });
+});
 
-    canvas.addEventListener('touchmove', () => {
-    // 指が動いたらキャンセル（＝スクロールやドラッグ）
+canvas.addEventListener('touchmove', () => {
     clearTimeout(longPressTimer);
-    });
-
-    function executeRightClickAction(e) {
-    e.preventDefault();
-        checkPanel2(e);
-    }
+});
 
 //イベントリスナー追加（リセットボタン押下時）
 buttonReset.addEventListener("click",e => {

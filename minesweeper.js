@@ -242,25 +242,6 @@ setInterval(() => {
     outputTimer.textContent = String(wTime).padStart(3,0);
 },1000);
 
-//スマホ用
-canvas.addEventListener('touchstart', (e) => {
-    // 指が2本触れたら「右クリック」とみなす
-    if (e.touches.length === 2) {
-        e.preventDefault(); // ズーム防止
-        
-        // 1本目の指の座標を使って判定
-        const touch = e.touches[0];
-        
-        // offsetXの代わりに簡易的に座標を模造して渡す
-        const rect = canvas.getBoundingClientRect();
-        const fakeEvent = {
-            offsetX: touch.clientX - rect.left,
-            offsetY: touch.clientY - rect.top
-        };
-        
-        checkPanel2(fakeEvent); 
-    }
-
 /**
  * セルの状態を確認し、セルを更新する（セルOPEN用）
  * @param {PointerEvent} e

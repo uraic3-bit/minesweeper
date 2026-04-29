@@ -229,6 +229,29 @@ canvas.addEventListener("contextmenu",e => {
     checkPanel2(e);
 })
 
+let longPressTimer;
+canvas.addEventListener('touchstart', (e) => {
+  // 指が触れたらタイマー開始
+  longPressTimer = setTimeout(() => {
+    executeRightClickAction(e); // 右クリック相当の処理を実行
+  }, 500);
+});
+
+canvas.addEventListener('touchend', () => {
+  // 時間内に指が離れたらキャンセル（＝通常のタップ）
+  clearTimeout(longPressTimer);
+});
+
+canvas.addEventListener('touchmove', () => {
+  // 指が動いたらキャンセル（＝スクロールやドラッグ）
+  clearTimeout(longPressTimer);
+});
+
+function executeRightClickAction(e) {
+   e.preventDefault();
+    checkPanel2(e);
+}
+
 //イベントリスナー追加（リセットボタン押下時）
 buttonReset.addEventListener("click",e => {
     array = createArea();

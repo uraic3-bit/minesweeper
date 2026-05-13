@@ -220,6 +220,10 @@ document.querySelector("#level-hard").addEventListener("click",(ev)=>setLevel(GA
 canvas.addEventListener("click",e => {
     checkPanel(e);
     checkComplete();
+    if (gameOverFlg){
+        gameOverFlg = false;
+        gameOver();
+    }
 });
 
 //イベントリスナー追加（マウス右クリック時）
@@ -227,6 +231,24 @@ canvas.addEventListener("contextmenu",e => {
     // ブラウザのメニューが出るのを阻止
     e.preventDefault();
     checkPanel2(e);
+    if (gameOverFlg){
+        gameOverFlg = false;
+        gameOver();
+    }
+});
+
+//イベントリスナー追加（マウス左右クリック時）
+canvas.addEventListener("mousedown",e => {
+    // 1 (左クリック) + 2 (右クリック) = 3 (左右同時押し)
+    if (event.buttons === 3) {
+        // 必要に応じてデフォルト動作（右クリックメニューなど）を禁止
+        e.preventDefault();
+        checkPanel3(e);
+    if (gameOverFlg){
+        gameOverFlg = false;
+        gameOver();
+    }
+    }
 });
 
 //イベントリスナー追加（リセットボタン押下時）
@@ -255,20 +277,7 @@ function checkPanel(e){
             (v.position.y <= e.offsetY) && 
             (e.offsetY < (v.position.y + panelSize.h))
         ){
-            //フラグがあるセルは何もしない
-            if(v.status === Status.SetFlg) return;
-            //爆弾セル
-            if(v.bomFlg) {
-                setCell(v,CELL_THEMS.BOMB);
-                gameOver();
-            //周囲に爆弾がないセル
-            } else if(v.aroundBomCount === 0){
-                setBlank(getPosFromFlatIndex(i));
-            //周囲に爆弾があるセル
-            } else {
-                setNumber2(getPosFromFlatIndex(i));
-            }
-
+            cellClickAction(v,i)
         };
     });
 }
@@ -386,6 +395,64 @@ function checkPanel2(e){
 }
 
 /**
+ * セル及び周囲8マスをオープン（セル一括OPEN用）
+ * @param {PointerEvent} e
+ */
+function checkPanel3(e){
+    array.flat().forEach((v,i,a) => {
+        if(
+            //クリック位置に該当するセルを判定
+            (v.position.x <= e.offsetX) &&
+            (e.offsetX < (v.position.x + panelSize.w)) && 
+            (v.position.y <= e.offsetY) && 
+            (e.offsetY < (v.position.y + panelSize.h))
+        ){
+            let j;
+            j = i-gameLevel.panelNum.x-1
+            cellClickAction(a[j],j);
+            j = i-gameLevel.panelNum.x;
+            cellClickAction(a[j],j);
+            j = i-gameLevel.panelNum.x+1;
+            cellClickAction(a[j],j);
+            j = i-1;
+            cellClickAction(a[j],j);
+            j = i;
+            cellClickAction(a[j],j);
+            j = i+1;
+            cellClickAction(a[j],j);
+            j = i+gameLevel.panelNum.x-1;
+            cellClickAction(a[j],j);
+            j = i+gameLevel.panelNum.x;
+            cellClickAction(a[j],j);
+            j = i+gameLevel.panelNum.x+1;
+            cellClickAction(a[j],j);
+        };
+    });
+}
+
+/**
+ * セルクリック時の処理
+ * @param {*} v 対象セル
+ * @param {*} i 1次元配列の添え字
+ * @returns 
+ */
+function cellClickAction(v,i){
+    //フラグがあるセルは何もしない
+    if(v.status === Status.SetFlg) return;
+    //爆弾セル
+    if(v.bomFlg) {
+        setCell(v,CELL_THEMS.BOMB);
+        gameOverFlg = true;
+    //周囲に爆弾がないセル
+    } else if(v.aroundBomCount === 0){
+        setBlank(getPosFromFlatIndex(i));
+    //周囲に爆弾があるセル
+    } else {
+        setNumber2(getPosFromFlatIndex(i));
+    }
+}
+
+/**
  *  Outputの爆弾数変更 
  * @param {number} c 増減値
 */
@@ -419,5 +486,6 @@ function setCell(p,c){
 
 /** @type {GAME_LEVEL} */ 
 let gameLevel = GAME_LEVEL.EASY;
+let gameOverFlg = false;
 /** @type {any[][]} */ 
 let array = createArea();

@@ -124,6 +124,8 @@ const ctx = canvas.getContext("2d");
  * @param {GAME_LEVEL} level
  */
 function createArea(){
+    gameOverComplete = false;
+
     //キャンバス定義
     canvas.width = gameLevel.panelNum.x * panelSize.w;
     canvas.height = gameLevel.panelNum.y * panelSize.h;
@@ -220,10 +222,6 @@ document.querySelector("#level-hard").addEventListener("click",(ev)=>setLevel(GA
 canvas.addEventListener("click",e => {
     checkPanel(e);
     checkComplete();
-    if (gameOverFlg){
-        gameOverFlg = false;
-        gameOver();
-    }
 });
 
 //イベントリスナー追加（マウス右クリック時）
@@ -231,10 +229,6 @@ canvas.addEventListener("contextmenu",e => {
     // ブラウザのメニューが出るのを阻止
     e.preventDefault();
     checkPanel2(e);
-    if (gameOverFlg){
-        gameOverFlg = false;
-        gameOver();
-    }
 });
 
 //イベントリスナー追加（マウス左右クリック時）
@@ -244,10 +238,6 @@ canvas.addEventListener("mousedown",e => {
         // 必要に応じてデフォルト動作（右クリックメニューなど）を禁止
         e.preventDefault();
         checkPanel3(e);
-    if (gameOverFlg){
-        gameOverFlg = false;
-        gameOver();
-    }
     }
 });
 
@@ -297,6 +287,9 @@ function getPosFromFlatIndex(i){
  * ゲームオーバー時の処理
  */
 async function gameOver(){
+    if (gameOverComplete) return;
+    gameOverComplete = true;
+
     let prom = () => new Promise(
         (resolve)=>{
             setTimeout(() => {
@@ -407,25 +400,20 @@ function checkPanel3(e){
             (v.position.y <= e.offsetY) && 
             (e.offsetY < (v.position.y + panelSize.h))
         ){
-            let j;
-            j = i-gameLevel.panelNum.x-1
-            cellClickAction(a[j],j);
-            j = i-gameLevel.panelNum.x;
-            cellClickAction(a[j],j);
-            j = i-gameLevel.panelNum.x+1;
-            cellClickAction(a[j],j);
-            j = i-1;
-            cellClickAction(a[j],j);
-            j = i;
-            cellClickAction(a[j],j);
-            j = i+1;
-            cellClickAction(a[j],j);
-            j = i+gameLevel.panelNum.x-1;
-            cellClickAction(a[j],j);
-            j = i+gameLevel.panelNum.x;
-            cellClickAction(a[j],j);
-            j = i+gameLevel.panelNum.x+1;
-            cellClickAction(a[j],j);
+            const doAction = function(j,checkRow) {
+                if(j<0 || j>(gameLevel.panelNum.x * gameLevel.panelNum.y)) return;
+                if ((parseInt(j / gameLevel.panelNum.x)) === checkRow) cellClickAction(a[j],j);
+            }
+            //対象セルに対しオープン
+            doAction(i-gameLevel.panelNum.x-1,parseInt((i/gameLevel.panelNum.x)-1));
+            doAction(i-gameLevel.panelNum.x,parseInt((i/gameLevel.panelNum.x)-1));
+            doAction(i-gameLevel.panelNum.x+1,parseInt((i/gameLevel.panelNum.x)-1));
+            doAction(i-1,parseInt(i / gameLevel.panelNum.x));
+            doAction(i,parseInt(i / gameLevel.panelNum.x));
+            doAction(i+1,parseInt(i / gameLevel.panelNum.x));
+            doAction(i+gameLevel.panelNum.x-1,parseInt((i/gameLevel.panelNum.x)+1));
+            doAction(i+gameLevel.panelNum.x,parseInt((i/gameLevel.panelNum.x)+1));
+            doAction(i+gameLevel.panelNum.x+1,parseInt((i/gameLevel.panelNum.x)+1));
         };
     });
 }
@@ -442,7 +430,7 @@ function cellClickAction(v,i){
     //爆弾セル
     if(v.bomFlg) {
         setCell(v,CELL_THEMS.BOMB);
-        gameOverFlg = true;
+        gameOver();
     //周囲に爆弾がないセル
     } else if(v.aroundBomCount === 0){
         setBlank(getPosFromFlatIndex(i));
@@ -486,6 +474,6 @@ function setCell(p,c){
 
 /** @type {GAME_LEVEL} */ 
 let gameLevel = GAME_LEVEL.EASY;
-let gameOverFlg = false;
+let gameOverComplete = false;
 /** @type {any[][]} */ 
 let array = createArea();
